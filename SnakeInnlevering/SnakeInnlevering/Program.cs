@@ -21,6 +21,9 @@ namespace SnakeMess
     using System;
     using System.Diagnostics;
     using System.CodeDom;
+
+    using SnakeInnlevering;
+
     class movement
     {
         public int X, Y;
@@ -30,11 +33,13 @@ namespace SnakeMess
 
     class SnakeMeSs
     {
-        public static void Main(string[] a)
+        public static void Main(string[] a)    
         {
-            bool gameOver = false, pause = false, inuse = false;
             string newKey = "right"; // 0 = up, 1 = right, 2 = down, 3 = left
             string prevKey = newKey;
+
+            bool gameOver = false, pause = false, inuse = false;
+            
             int boardWidth = Console.WindowWidth, boardHeight = Console.WindowHeight;
             Random rng = new Random();
             movement app = new movement();
@@ -67,22 +72,12 @@ namespace SnakeMess
             time.Start();
             while (!gameOver)
             {
+                
                 if (Console.KeyAvailable)
                 {
-                    ConsoleKeyInfo controls = Console.ReadKey(true);// 0 = up, 1 = right, 2 = down, 3 = left
-                    if (controls.Key == ConsoleKey.Escape)
-                        gameOver = true;
-                    else if (controls.Key == ConsoleKey.Spacebar)
-                        pause = !pause;
-                    else if (controls.Key == ConsoleKey.UpArrow && prevKey != "down")
-                        newKey = "up";
-                    else if (controls.Key == ConsoleKey.RightArrow && prevKey != "left")
-                        newKey = "right";
-                    else if (controls.Key == ConsoleKey.DownArrow && prevKey != "up")
-                        newKey = "down";
-                    else if (controls.Key == ConsoleKey.LeftArrow && prevKey != "right")
-                        newKey = "left";
+                    //Fucka litt med koden her, men må endres uansett             
                 }
+
                 if (!pause)
                 {
                     if (time.ElapsedMilliseconds < 100)
@@ -102,7 +97,6 @@ namespace SnakeMess
                         case "down":
                             newHead.Y += 1;
                             break;
-                        case "left":
                         default:
                             newHead.X -= 1;
                             break;
