@@ -17,152 +17,157 @@ namespace SnakeMess
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Data;
+    //using System.Data;
     using System;
     using System.Diagnostics;
     using System.CodeDom;
-	class coord
-	{
-		public int X; public int Y;
-        public coord( int x = 0, int y = 0 ) { X = x; Y = y; }
-        public coord( coord input ) { X = input.X; Y = input.Y; }
+    class movement
+    {
+        public int X, Y;
+        public movement(int x = 0, int y = 0) { X = x; Y = y; }
+        public movement(movement input) { X = input.X; Y = input.Y; }
     }
 
     class SnakeMeSs
-	{
-		public static void Main( string[] a )
-		{
-            bool gg = false, pause = false, inuse = false;
-			short newDir = 2; // 0 = up, 1 = right, 2 = down, 3 = left
-			short last = newDir;
-            int boardW = Console.WindowWidth, boardH = Console.WindowHeight;
+    {
+        public static void Main(string[] a)
+        {
+            bool gameOver = false, pause = false, inuse = false;
+            string newKey = "right"; // 0 = up, 1 = right, 2 = down, 3 = left
+            string prevKey = newKey;
+            int boardWidth = Console.WindowWidth, boardHeight = Console.WindowHeight;
             Random rng = new Random();
-            coord app = new coord();
-            List<coord> snake = new List<coord>();
-			snake.Add( new coord( 10, 10 ) ); snake.Add( new coord( 10, 10 ) ); snake.Add( new coord( 10, 10 ) ); snake.Add( new coord( 10, 10 ) );
-            Console.CursorVisible = false; 
-            Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition( 10, 10 ); Console.Write( "@" );
-			while ( true )
-			{
-				app.X = rng.Next( 0, boardW ); app.Y = rng.Next( 0, boardH );
-				bool spot = true;
-				foreach ( coord i in snake )
-					if ( i.X == app.X && i.Y == app.Y )
-					{
-						spot = false;
-						break;
-					}
-				if ( spot )
-				{
-					Console.ForegroundColor = ConsoleColor.Red; Console.SetCursorPosition( app.X, app.Y ); Console.Write( "$" );
-					break;
-				}
-			}
-			Stopwatch t = new Stopwatch();
-			t.Start();
-			while ( !gg )
-			{
-				if ( Console.KeyAvailable )
-				{
-					ConsoleKeyInfo cki = Console.ReadKey( true );
-					if ( cki.Key == ConsoleKey.Escape )
-						gg = true;
-					else if ( cki.Key == ConsoleKey.Spacebar )
-						pause = !pause;
-					else if ( cki.Key == ConsoleKey.UpArrow && last != 2 )
-						newDir = 0;
-					else if ( cki.Key == ConsoleKey.RightArrow && last != 3 )
-						newDir = 1;
-					else if ( cki.Key == ConsoleKey.DownArrow && last != 0 )
-						newDir = 2;
-					else if ( cki.Key == ConsoleKey.LeftArrow && last != 1 )
-						newDir = 3;
-				}
-				if ( !pause )
-				{
-					if ( t.ElapsedMilliseconds < 100 )
-						continue;
-					t.Restart();
-					coord tail = new coord(snake.First());
-					coord head = new coord(snake.Last());
-					coord newH = new coord(head);
-					switch ( newDir )
-					{
-						case 0:
-							newH.Y -= 1;
-							break;
-						case 1:
-							newH.X += 1;
-							break;
-						case 2:
-							newH.Y += 1;
-							break;
-						case 3:
-						default:
-							newH.X -= 1;
-							break;
-					}
-					if ( newH.X < 0 || newH.X >= boardW )
-						gg = true;
-					else if ( newH.Y < 0 || newH.Y >= boardH )
-						gg = true;
-					if ( newH.X == app.X && newH.Y == app.Y )
-					{
-						if ( snake.Count + 1 >= boardW * boardH )
-							// No more room to place apples -- game over.
-							gg = true;
-						else
-						{
-							while ( true )
-							{
-								app.X = rng.Next( 0, boardW ); app.Y = rng.Next( 0, boardH );
-								bool found = true;
-								foreach ( coord i in snake )
-									if ( i.X == app.X && i.Y == app.Y )
-									{
-										found = false;
-										break;
-									}
-								if ( found )
-								{
-									inuse = true;
-									break;
-								}
-							}
-						}
-					}
-					if ( !inuse )
-					{
-						snake.RemoveAt( 0 );
-						foreach ( coord x in snake )
-							if ( x.X == newH.X && x.Y == newH.Y )
-							{
-								// Death by accidental self-cannibalism.
-								gg = true;
-								break;
-							}
-					}
-					if ( !gg )
-					{
-						Console.ForegroundColor = ConsoleColor.Green; 
-                        Console.SetCursorPosition( head.X, head.Y ); Console.Write( "O" );
-						if ( !inuse )
-						{
-							Console.SetCursorPosition( tail.X, tail.Y ); Console.Write( " " );
-						}
-						else
-						{
-							Console.ForegroundColor = ConsoleColor.Red; Console.SetCursorPosition( app.X, app.Y ); Console.Write( "$" );
-							inuse = false;
-						}
-						snake.Add( newH );
-						Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition( newH.X, newH.Y ); Console.Write( "@" );
-						last = newDir;
-					}
-				}
-			}
-		}
-	}
+            movement app = new movement();
+            List<movement> snakeParts = new List<movement>();
+            Console.CursorVisible = false;
+            for (int i = 0; i < 4; i++)
+            {
+                snakeParts.Add(new movement(10, 10));
+            }
+
+            
+            Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(10, 10); Console.Write("@");
+            while (true)
+            {
+                app.X = rng.Next(0, boardWidth); app.Y = rng.Next(0, boardHeight);
+                bool spot = true;
+                foreach (movement i in snakeParts)
+                    if (i.X == app.X && i.Y == app.Y)
+                    {
+                        spot = false;
+                        break;
+                    }
+                if (spot)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red; Console.SetCursorPosition(app.X, app.Y); Console.Write("$");
+                    break;
+                }
+            }
+            Stopwatch time = new Stopwatch();
+            time.Start();
+            while (!gameOver)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo controls = Console.ReadKey(true);// 0 = up, 1 = right, 2 = down, 3 = left
+                    if (controls.Key == ConsoleKey.Escape)
+                        gameOver = true;
+                    else if (controls.Key == ConsoleKey.Spacebar)
+                        pause = !pause;
+                    else if (controls.Key == ConsoleKey.UpArrow && prevKey != "down")
+                        newKey = "up";
+                    else if (controls.Key == ConsoleKey.RightArrow && prevKey != "left")
+                        newKey = "right";
+                    else if (controls.Key == ConsoleKey.DownArrow && prevKey != "up")
+                        newKey = "down";
+                    else if (controls.Key == ConsoleKey.LeftArrow && prevKey != "right")
+                        newKey = "left";
+                }
+                if (!pause)
+                {
+                    if (time.ElapsedMilliseconds < 100)
+                        continue;
+                    time.Restart();
+                    movement tail = new movement(snakeParts.First());
+                    movement head = new movement(snakeParts.Last());
+                    movement newHead = new movement(head);
+                    switch (newKey)
+                    {
+                        case "up":
+                            newHead.Y -= 1;
+                            break;
+                        case "right":
+                            newHead.X += 1;
+                            break;
+                        case "down":
+                            newHead.Y += 1;
+                            break;
+                        case "left":
+                        default:
+                            newHead.X -= 1;
+                            break;
+                    }
+                    if (newHead.X < 0 || newHead.X >= boardWidth)
+                        gameOver = true;
+                    else if (newHead.Y < 0 || newHead.Y >= boardHeight)
+                        gameOver = true;
+                    if (newHead.X == app.X && newHead.Y == app.Y)
+                    {
+                        if (snakeParts.Count + 1 >= boardWidth * boardHeight)
+                            // No more room to place apples -- game over.
+                            gameOver = true;
+                        else
+                        {
+                            while (true)
+                            {
+                                app.X = rng.Next(0, boardWidth); app.Y = rng.Next(0, boardHeight);
+                                bool found = true;
+                                foreach (movement i in snakeParts)
+                                    if (i.X == app.X && i.Y == app.Y)
+                                    {
+                                        found = false;
+                                        break;
+                                    }
+                                if (found)
+                                {
+                                    inuse = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!inuse)
+                    {
+                        snakeParts.RemoveAt(0);
+                        foreach (movement x in snakeParts)
+                            if (x.X == newHead.X && x.Y == newHead.Y)
+                            {
+                                // Death by accidental self-cannibalism.
+                                gameOver = true;
+                                break;
+                            }
+                    }
+                    if (!gameOver)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.SetCursorPosition(head.X, head.Y); Console.Write("O");
+                        if (!inuse)
+                        {
+                            Console.SetCursorPosition(tail.X, tail.Y); Console.Write(" ");
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red; Console.SetCursorPosition(app.X, app.Y); Console.Write("$");
+                            inuse = false;
+                        }
+                        snakeParts.Add(newHead);
+                        Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(newHead.X, newHead.Y); Console.Write("@");
+                        prevKey = newKey;
+                    }
+                }
+            }
+        }
+    }
 
 
 }
