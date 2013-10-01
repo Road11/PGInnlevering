@@ -45,7 +45,7 @@ namespace SnakeMess
                 snakeParts.Add(new movement(10, 10));
             }
 
-            
+
             Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(10, 10); Console.Write("@");
             while (true)
             {
