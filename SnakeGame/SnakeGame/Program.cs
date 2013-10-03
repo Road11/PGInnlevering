@@ -10,6 +10,8 @@
 //      - Tomas
 //
 
+using SnakeGame;
+
 namespace SnakeMess
 {
     using System;
@@ -18,59 +20,65 @@ namespace SnakeMess
     using System.Linq;
     //using System.Data;
 
-    internal class movement
+/*    internal class Point
     {
-        private int X;
-        private int Y;
+        public int  X { get; set; }
+        public int Y { get; set; }
 
-        public movement(int x = 0, int y = 0)
+        public Point(int x = 0, int y = 0)
         {
             this.X = x;
             this.Y = y;
         }
 
-        public movement(movement input)
+        public Point(Point input)
         {
             this.X = input.X;
             this.Y = input.Y;
         }
-    }
+    }*/
 
     internal class SnakeMeSs
     {
         public static void Main(string[] a)
         {
+            SnakePart snake = new SnakePart();
             bool gameOver = false;
             bool pause = false;
             bool inuse = false;
             string newKey = "right"; // 0 = up, 1 = right, 2 = down, 3 = left
             string prevKey = newKey;
-            int boardWidth = Console.WindowWidth;
-            int boardHeight = Console.WindowHeight;
+            int boardWidth = Console.WindowWidth; //
+            int boardHeight = Console.WindowHeight; //
 
             var rng = new Random();
-            var movement = new movement();
-            var snakeParts = new List<movement>();
+            var point = new Point();
+            var snakeParts = new List<Point>();
 
             Console.CursorVisible = false;
-
             for (int i = 0; i < 4; i++)
             {
-                snakeParts.Add(new movement(10, 10));
+                snakeParts.Add(new Point(10, 10));
             }
+
+            
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.SetCursorPosition(10, 10);
             Console.Write("@");
 
-            while (true)
+               Food food = new Food();
+
+            food.DrawFood();
+            
+/*            while (true)
             {
-                movement.X = rng.Next(0, boardWidth);
-                movement.Y = rng.Next(0, boardHeight);
+                Point.X = rng.Next(0, boardWidth);
+                Point.Y = rng.Next(0, boardHeight);
                 bool spot = true;
-                foreach (movement i in snakeParts)
+                foreach (Point p in snakeParts)
                 {
-                    if (i.X == movement.X && i.Y == movement.Y)
+                    if (p.X == Point.X && p.Y == Point.Y)
                     {
                         spot = false;
                         break;
@@ -79,16 +87,17 @@ namespace SnakeMess
                 if (spot)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.SetCursorPosition(movement.X, movement.Y);
+                    Console.SetCursorPosition(Point.X, Point.Y);
                     Console.Write("$");
                     break;
                 }
-            }
+            }*/
             var time = new Stopwatch();
             time.Start();
             while (!gameOver)
             {
-                if (Console.KeyAvailable)
+
+/*                if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo controls = Console.ReadKey(true); // 0 = up, 1 = right, 2 = down, 3 = left
                     if (controls.Key == ConsoleKey.Escape)
@@ -115,7 +124,7 @@ namespace SnakeMess
                     {
                         newKey = "left";
                     }
-                }
+                }*/
                 if (!pause)
                 {
                     if (time.ElapsedMilliseconds < 100)
@@ -123,10 +132,13 @@ namespace SnakeMess
                         continue;
                     }
                     time.Restart();
-                    var tail = new movement(snakeParts.First());
-                    var head = new movement(snakeParts.Last());
-                    var newHead = new movement(head);
-                    switch (newKey)
+
+                    Input input = new Input();
+                    input.CheckInput();
+/*                    var tail = new Point(snakeParts.First());
+                    var head = new Point(snakeParts.Last());
+                    var newHead = new Point(head);*/
+/*                    switch (newKey)
                     {
                         case "up":
                             newHead.Y -= 1;
@@ -137,20 +149,19 @@ namespace SnakeMess
                         case "down":
                             newHead.Y += 1;
                             break;
-                        case "left":
                         default:
                             newHead.X -= 1;
                             break;
-                    }
-                    if (newHead.X < 0 || newHead.X >= boardWidth)
+                    }*/
+                    if (snake.newHead.X < 0 || snake.newHead.X >= boardWidth)
                     {
                         gameOver = true;
                     }
-                    else if (newHead.Y < 0 || newHead.Y >= boardHeight)
+                    else if (snake.newHead.Y < 0 || snake.newHead.Y >= boardHeight)
                     {
                         gameOver = true;
                     }
-                    if (newHead.X == movement.X && newHead.Y == movement.Y)
+                    if (snake.newHead.X == point.X && snake.newHead.Y == point.Y)
                     {
                         if (snakeParts.Count + 1 >= boardWidth * boardHeight)
                         {
@@ -161,12 +172,12 @@ namespace SnakeMess
                         {
                             while (true)
                             {
-                                movement.X = rng.Next(0, boardWidth);
-                                movement.Y = rng.Next(0, boardHeight);
+                                point.X = rng.Next(0, boardWidth);
+                                point.Y = rng.Next(0, boardHeight);
                                 bool found = true;
-                                foreach (movement i in snakeParts)
+                                foreach (Point i in snakeParts)
                                 {
-                                    if (i.X == movement.X && i.Y == movement.Y)
+                                    if (i.X == point.X && i.Y == point.Y)
                                     {
                                         found = false;
                                         break;
@@ -182,10 +193,10 @@ namespace SnakeMess
                     }
                     if (!inuse)
                     {
-                        snakeParts.RemoveAt(0);
-                        foreach (movement x in snakeParts)
+                        snake.snakeParts.RemoveAt(0);
+                        foreach (Point x in snakeParts)
                         {
-                            if (x.X == newHead.X && x.Y == newHead.Y)
+                            if (x.X == snake.newHead.X && x.Y == snake.newHead.Y)
                             {
                                 // Death by accidental self-cannibalism.
                                 gameOver = true;
@@ -196,23 +207,23 @@ namespace SnakeMess
                     if (!gameOver)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.SetCursorPosition(head.X, head.Y);
+                        Console.SetCursorPosition(snake.head.X, snake.head.Y);
                         Console.Write("O");
                         if (!inuse)
                         {
-                            Console.SetCursorPosition(tail.X, tail.Y);
+                            Console.SetCursorPosition(snake.tail.X, snake.tail.Y);
                             Console.Write(" ");
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.SetCursorPosition(movement.X, movement.Y);
+                            Console.SetCursorPosition(point.X, point.Y);
                             Console.Write("$");
                             inuse = false;
                         }
-                        snakeParts.Add(newHead);
+                        snake.snakeParts.Add(snake.newHead);
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.SetCursorPosition(newHead.X, newHead.Y);
+                        Console.SetCursorPosition(snake.newHead.X, snake.newHead.Y);
                         Console.Write("@");
                         prevKey = newKey;
                     }

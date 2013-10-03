@@ -8,8 +8,8 @@ namespace SnakeGame
 {
     class Input
     {
+        Mover mover = new Mover();
         public enum KeyOptions {Left, Right, Up, Down, Pause, Quit}
-
         public static KeyOptions ChosenKey { get; set; }
 
         public void CheckInput()
@@ -45,16 +45,16 @@ namespace SnakeGame
             switch (ChosenKey)
             {
                 case KeyOptions.Left:
-                    //do this
+                    mover.MoveLeft();
                     break;
                 case KeyOptions.Right:
-                    //do this
+                    mover.MoveRight();
                     break;
                 case KeyOptions.Up:
-                    //do this
+                    mover.MoveUp();
                     break;
                 case KeyOptions.Down:
-                    //do this
+                    mover.MoveDown();
                     break;
                 case KeyOptions.Pause:
                     //do this
