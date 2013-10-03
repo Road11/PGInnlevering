@@ -38,7 +38,7 @@ namespace SnakeMess
             int boardWidth = Console.WindowWidth, boardHeight = Console.WindowHeight;
             Random rng = new Random();
             movement app = new movement();
-            List<movement> snakeParts = new List<movement>();
+           /// List<movement> snakeParts = new List<movement>();
             Console.CursorVisible = false;
             for (int i = 0; i < 4; i++)
             {
